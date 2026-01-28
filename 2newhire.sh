@@ -2,7 +2,7 @@
 
 #READ FILE WITH LIST OF STRINGS (i.e. John Doe Hr)
 #CREATE USER FOR EACH STRING WITH FORMAT "FIRST INITIAL,LAST NAME" (i.e. jdoe)
-#ADD SECONDARY GROUP USING 3RD FIELD IN STRING (i.e. hr)
+#ADD SECONDARY GROUP USING 3RD FIELD IN STRING (i.e. mang)
 #IF THIRD STRING NOT PRESENT ADD USER TO REG GROUP
 
 diff_output=$(diff /bluetail/employees /bluetail/employees.bak | awk '/^< / {sub("^< ", ""); print}')
