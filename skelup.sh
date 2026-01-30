@@ -3,18 +3,21 @@
 #COPY ALL MODIFIED FILES IN SKEL DIRECTORY TO ALL HOME DIRECTORIES
 
 
-for user in /home/*;
-do
+USERS=$(getent group REG | cut -d: -f4 | tr ',' '\n')
+
+logger -t onboarding "Change detected in main skeleton directory."
+logger -t onboarding "Syncing Initiated for all general staff."
+logger -t onboarding "Home Directory is being updated for the following users:"
 
 
-logger -t onboarding "Change detected in main skeleton directory on $(date)"
-logger -t onboarding "Syncing files for all general staff"
+while IFS= read -r user; do
+
+    # Sync the /etc/skel directory to REG group user's home
+    rsync -a --delete "/etc/skel/" "/home/$user/"
+
+    # Log each user icnluded in sync
+    logger -t onboarding "$user"
+done <<< "$USERS"
 
 
-    rsync -a --delete /etc/skel /home/$user/
-    logger -t onboarding "Syncing Complete: Home directories has been updated for all general staff."
-
-
-
-
-done 
+    logger -t onboarding "Syncing Complete. $(date)"
