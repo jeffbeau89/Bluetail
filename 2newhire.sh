@@ -33,27 +33,33 @@ if [ -n "$diff_output" ]; then
 				logger -t onboarding "There has been a change to "$name"'s employment status"
   				logger -t onboarding ""$name" has been terminated and username "$user" has been removed from the system"
 
-        	else
-
- 			if [[ -n "$dept" ]]; then
+		elif [[ -z "$dept" ]]; then
 
 
-                        	useradd -G "$dept" -c "$name" -m -k /bluetail/"$dept" "$user"
-                        	logger -t onboarding ""$name" was hired $(date), and was assigned the username: "$user"."
-				logger -t onboarding "User: "$user" has been added to "$dept" department"
-                        	logger -t onboarding "All "$dept" files added to "$user"'s home directory."
-                
-			else
+                        	useradd -G REG -c "$name" "$user"
+                                logger -t onboarding ""$name" was hired $(date), and was assigned the username: "$user"."
+                                logger -t onboarding "User: "$user" has been added to $dept department."
+                                logger -t onboarding "All "$dept" files have been added to $user's home directory."
+
+		elif [[ $dept == "ADMIN" ]]; then
+
+				
+				useradd -G "$dept,wheel" -c "$name" -m -k /bluetail/"$dept" "$user"
+                                logger -t onboarding ""$name" was hired $(date), and was assigned the username: "$user"."
+                                logger -t onboarding "User: "$user" is now an administrator and root access has been granted."
+                                logger -t onboarding "All "$dept" files have been added to "$user"'s home directory."
+
+
+		else
+			
+				 useradd -G "$dept" -c "$name" -m -k /bluetail/"$dept" "$user"
+                                logger -t onboarding ""$name" was hired $(date), and was assigned the username: "$user"."
+                                logger -t onboarding "User: "$user" has been added to "$dept" department"
+                                logger -t onboarding "All "$dept" files have been added to "$user"'s home directory."
+
+                fi
+
 		
-                        	useradd -G REG -c "$name" "$user" 
-                        	logger -t onboarding ""$name" was hired $(date), and was assigned the username: "$user"."
-                        	logger -t onboarding "User: "$user" has been added to $dept department."
-                        	logger -t onboarding "All "$dept" files added to $user's home directory."
-                	fi
-
-
-
-        	fi
 
 	done < /bluetail/employ.temp
 
@@ -62,6 +68,11 @@ else
 	logger -t onboarding "Employees file was accessed, but no changes were made. Terminating Onboarding."
 
 fi
+
+
+
+
+
 
 cp -f /bluetail/employees /bluetail/employees.bak
 
